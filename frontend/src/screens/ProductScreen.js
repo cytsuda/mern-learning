@@ -1,11 +1,20 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import { Link } from "react-router-dom";
 import { Col, Row, Image, Card, ListGroup, Button } from "react-bootstrap";
 import Rating from "../components/Rating";
-import products from "../../../backend/data/products";
 
 const ProductScreen = ({ match }) => {
-  const product = products.find((p) => p._id === match.params.id);
+  const [product, setProduct] = useState({});
+  
+  useEffect(() => {
+    const getProduct = async () => {
+      const { data } = await axios.get(`/api/product/${match.params.id}`);
+      setProduct(data);
+    };
+    getProduct();
+  }, [match.params.id]);
+
   return (
     <>
       <Link className="btn btn-outline-primary my-3" to="/">
@@ -30,8 +39,8 @@ const ProductScreen = ({ match }) => {
             <Card.Body>
               <Card.Title className="d-flex align-items-baseline">
                 <span className="mr-auto font-weight-bold">Price:</span>
-                <span className="mr-1 font-italic">$</span>
-                <span className="font-weight-bold font-italic h3">
+                <span className="mr-1">$</span>
+                <span className="font-weight-bold h3">
                   {product.price}
                 </span>
               </Card.Title>
