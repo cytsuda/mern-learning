@@ -13,16 +13,16 @@ import Order from "./models/orderModel.js";
 import connectDB from "./config/db.js";
 
 dotenv.config();
+connectDB();
 
 const importData = async () => {
   try {
     await Order.deleteMany();
     await Product.deleteMany();
     await User.deleteMany();
-
     const createUsers = await User.insertMany(users);
     const adminUser = createUsers[0]._id;
-
+    console.log(adminUser);
     const sampleProducts = products.map((product) => {
       return { ...product, user: adminUser };
     });
@@ -51,8 +51,11 @@ const destroyData = async () => {
   }
 };
 
+console.log("Seeder - Starting".green.bold);
 if (process.argv[2] === "-d") {
+  console.log("Seeder - Start Destroy".red.bold);
   destroyData();
 } else {
+  console.log("Seeder - Start Import".blue.bold);
   importData();
 }
