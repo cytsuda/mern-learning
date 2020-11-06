@@ -13,7 +13,7 @@ const ProductScreen = ({ match }) => {
       setProduct(data);
     };
     getProduct();
-  }, [match.params.id]);
+  }, [match]);
 
   return (
     <>
