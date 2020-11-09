@@ -1,7 +1,16 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import clsx from "clsx";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import { Col, Row, Image, Card, ListGroup, Button } from "react-bootstrap";
+import {
+  Col,
+  Row,
+  Image,
+  Card,
+  ListGroup,
+  Button,
+  Form,
+} from "react-bootstrap";
 
 import Rating from "../components/Rating";
 import Message from "../components/Message";
@@ -9,7 +18,8 @@ import Loader from "../components/Loader";
 
 import { detailProduct } from "../actions/productActions";
 
-const ProductScreen = ({ match }) => {
+const ProductScreen = ({ history, match }) => {
+  const [qty, setQty] = useState();
   const dispatch = useDispatch();
   const productDetails = useSelector((state) => state.productDetails);
   const { product, error, loading } = productDetails;
@@ -18,6 +28,9 @@ const ProductScreen = ({ match }) => {
     dispatch(detailProduct(match.params.id));
   }, [dispatch, match]);
 
+  const submitHandler = () => {
+    history.push(`/cart/${match.params.id}?qty=${qty}`);
+  };
   return (
     <>
       <Link className="btn btn-outline-primary my-3" to="/">
@@ -36,11 +49,10 @@ const ProductScreen = ({ match }) => {
             <Card className="h-100">
               <Card.Header>
                 <Card.Title as="h5">{product.name}</Card.Title>
-                <Card.Subtitle>
+                <Card.Subtitle className="d-flex">
                   <Rating
                     value={product.rating}
                     text={`${product.numReviews} reviews`}
-                    sep="ml-2"
                   />
                 </Card.Subtitle>
               </Card.Header>
@@ -73,12 +85,33 @@ const ProductScreen = ({ match }) => {
                   </Col>
                 </Row>
               </ListGroup.Item>
+              {product.countInStock > 0 && (
+                <ListGroup.Item>
+                  <Row>
+                    <Col>Qty:</Col>
+                    <Col>
+                      <Form.Control
+                        as="select"
+                        value={qty}
+                        onChange={(e) => setQty(e.target.value)}
+                      >
+                        {[...Array(product.countInStock).keys()].map((x) => (
+                          <option key={x + 1} value={x + 1}>
+                            {x + 1}
+                          </option>
+                        ))}
+                      </Form.Control>
+                    </Col>
+                  </Row>
+                </ListGroup.Item>
+              )}
               <ListGroup.Item>
                 <Button
-                  className="btn-block"
+                  className={clsx("btn-block", product.countInStock === 0 ? "btn-secondary":"btn-primary")}
                   disabled={product.countInStock === 0}
+                  onClick={submitHandler}
                 >
-                  Add to cart
+                  {product.countInStock > 0 ? "Add to cart" : "Out of Stock"}
                 </Button>
               </ListGroup.Item>
             </ListGroup>
