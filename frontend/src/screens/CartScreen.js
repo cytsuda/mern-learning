@@ -13,7 +13,7 @@ import {
 } from "react-bootstrap";
 
 import Message from "../components/Message";
-import { addToCart } from "../actions/cartActions";
+import { addToCart, removeFromCart } from "../actions/cartActions";
 
 const CartScreen = ({ match, location, history }) => {
   const productId = match.params.id;
@@ -30,7 +30,8 @@ const CartScreen = ({ match, location, history }) => {
   }, [dispatch, productId, qty]);
 
   const removeFromCartHandler = (id) => {
-    console.log("REMOVE FROM CART HANDLER " + id);
+    console.log(id);
+    dispatch(removeFromCart(id));
   };
   const checkoutHandler = () => {
     history.push(`/login?redirect=shipping`);
@@ -43,7 +44,10 @@ const CartScreen = ({ match, location, history }) => {
         <hr />
         {cartItems.length === 0 ? (
           <Message>
-            Your cart is empty <Link to="/">Go Back</Link>
+            Your cart is empty,
+            <Link className="font-weight-bold ml-1" to="/">
+              click here to go back
+            </Link>
           </Message>
         ) : (
           <ListGroup variant="flush">
@@ -88,7 +92,6 @@ const CartScreen = ({ match, location, history }) => {
             ))}
           </ListGroup>
         )}
-
         <hr />
       </Col>
       <Col md={4}>
@@ -99,7 +102,10 @@ const CartScreen = ({ match, location, history }) => {
               items
             </Card.Title>
             <Card.Subtitle as="h5">
-              ${cartItems.reduce((acc, item) => acc + item.qty * item.price, 0).toFixed(2)}
+              $
+              {cartItems
+                .reduce((acc, item) => acc + item.qty * item.price, 0)
+                .toFixed(2)}
             </Card.Subtitle>
           </Card.Body>
           <Card.Footer>
