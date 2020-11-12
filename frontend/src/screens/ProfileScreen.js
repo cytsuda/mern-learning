@@ -5,7 +5,7 @@ import { Button, Col, Form, Row } from "react-bootstrap";
 import Message from "../components/Message";
 import Loader from "../components/Loader";
 
-import { getUserDetails } from "../actions/userActions";
+import { getUserDetails, updateUserProfile } from "../actions/userActions";
 
 const ProfileScreen = ({ location, history }) => {
   const [name, setName] = useState("");
@@ -22,15 +22,16 @@ const ProfileScreen = ({ location, history }) => {
   const userLogin = useSelector((state) => state.userLogin);
   const { userInfo } = userLogin;
 
+  const userUpdateProfile = useSelector((state) => state.userUpdateProfile);
+  const { success } = userUpdateProfile;
+
   useEffect(() => {
     if (!userInfo) {
       history.push("/login");
     } else {
       if (!user.name) {
-        console.log("[!userName]")
         dispatch(getUserDetails("profile"));
       } else {
-        console.log("[userName]")
         setName(user.name);
         setEmail(user.email);
       }
@@ -42,7 +43,7 @@ const ProfileScreen = ({ location, history }) => {
     if (confirmPassword !== password) {
       setMessage("Password do not match");
     } else {
-      // DISPATCH UPDATE USER PROFILE
+      dispatch(updateUserProfile({ id: user._id, name, email, password }));
     }
   };
 
@@ -50,9 +51,10 @@ const ProfileScreen = ({ location, history }) => {
     <Row>
       <Col md={3}>
         <h1>Profile</h1>
+        {loading && <Loader />}
         {message && <Message variant="danger">{message}</Message>}
         {error && <Message variant="danger">{error}</Message>}
-        {loading && <Loader />}
+        {success && <Message variant="success">Profile Updated</Message>}
         <Form onSubmit={submitHandler}>
           <Form.Group controlId="name">
             <Form.Label>Name</Form.Label>
