@@ -30,6 +30,7 @@ const authUser = asyncHandler(async (req, res) => {
 */
 const getUserProfile = asyncHandler(async (req, res) => {
   const user = await User.findById(req.user._id);
+  console.log("[GET USER PROFILE]")
   if (user) {
     res.json({
       _id: user._id,
