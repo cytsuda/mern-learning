@@ -6,7 +6,7 @@ import {
   ListGroup,
   Image,
   Card,
-  Table ,
+  Table,
 } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 
