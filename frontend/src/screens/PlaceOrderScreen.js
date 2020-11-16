@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   Button,
   Row,
@@ -13,25 +13,48 @@ import { useDispatch, useSelector } from "react-redux";
 import Message from "../components/Message";
 import CheckoutSteps from "../components/CheckoutSteps";
 
-const PlaceOrderScreen = () => {
+import { createOrder } from "../actions/orderActions";
+
+const PlaceOrderScreen = ({ history }) => {
   const dispatch = useDispatch();
   const cart = useSelector((state) => state.cart);
   const { shippingAddress, cartItems } = cart;
 
   // Calculate Prices
   const addDecimals = (num) => Math.round((num * 100) / 100).toFixed(2);
-  const itemPrices = addDecimals(
+  const itemsPrice = addDecimals(
     cartItems.reduce((acc, item) => acc + item.price * item.qty, 0)
   );
   const shippingPrice = addDecimals(cartItems > 100 ? 0 : 100);
-  const taxPrice = addDecimals(Number(0.15 * itemPrices).toFixed(2));
-  const total = addDecimals(
-    Number(itemPrices) + Number(taxPrice) + Number(shippingPrice)
+  const taxPrice = addDecimals(Number(0.15 * itemsPrice).toFixed(2));
+  const totalPrice = addDecimals(
+    Number(itemsPrice) + Number(taxPrice) + Number(shippingPrice)
   );
 
   // F
+  const orderCreate = useSelector((state) => state.orderCreate);
+  const { order, success, error } = orderCreate;
+  useEffect(() => {
+    if (success) {
+      history.push(`/order/${order._id}`);
+    }
+    // eslint-disable-next-line
+  }, [history, success]);
+
   const placeOrderHandler = () => {
-    console.log("place order");
+    console.log("placeOrder")
+    dispatch(
+      createOrder({
+        // user: req.user._id,
+        orderItems: cartItems,
+        shippingAddress,
+        paymentMethod: cart.paymentMethod,
+        itemsPrice,
+        taxPrice,
+        shippingPrice,
+        totalPrice,
+      })
+    );
   };
   return (
     <>
@@ -115,7 +138,7 @@ const PlaceOrderScreen = () => {
                 <tbody>
                   <tr>
                     <td>All Items</td>
-                    <td className="text-right">${itemPrices}</td>
+                    <td className="text-right">${itemsPrice}</td>
                   </tr>
                   <tr>
                     <td>Shipping Price</td>
@@ -127,10 +150,13 @@ const PlaceOrderScreen = () => {
                   </tr>
                   <tr className="active">
                     <td className="font-weight-bold">Total</td>
-                    <td className="text-right font-weight-bold">${total}</td>
+                    <td className="text-right font-weight-bold">
+                      ${totalPrice}
+                    </td>
                   </tr>
                 </tbody>
               </Table>
+              {error && <Message variant="danger">{error}</Message>}
               <Button
                 className="btn-block font-weight-bold"
                 onClick={placeOrderHandler}

@@ -1,8 +1,8 @@
 import express from "express";
 const router = express.Router();
-import { addOrderItems } from "../controller/orderController.js";
+import { addItemsOrder } from "../controller/orderController.js";
 import { protect } from "../middleware/authMiddleware.js";
 
-router.route("/").post(protect, addOrderItems);
+router.route("/").post(protect, addItemsOrder);
 
 export default router;
