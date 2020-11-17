@@ -8,7 +8,6 @@ import {
   Image,
   Card,
   Table,
-  Button,
 } from "react-bootstrap";
 import { PayPalButton } from "react-paypal-button-v2";
 import { useDispatch, useSelector } from "react-redux";
