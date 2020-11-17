@@ -111,14 +111,14 @@ const ProfileScreen = ({ location, history }) => {
           <Message variant="danger">{errorOrders}</Message>
         ) : (
           <Table variant="light" striped bordered hover responsive className="table-sm">
-            <thead>
+            <thead class="thead-dark">
               <tr>
                 <th>ID</th>
                 <th className="text-center">DATE</th>
                 <th className="text-center">TOTAL</th>
                 <th className="text-center">PAID</th>
                 <th className="text-center">DELIVERED</th>
-                <th></th>
+                <th className="text-center">#</th>
               </tr>
             </thead>
             <tbody>
