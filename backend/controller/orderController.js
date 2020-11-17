@@ -7,7 +7,6 @@ import Order from "../models/orderModel.js";
 @access     Private
 */
 const addItemsOrder = asyncHandler(async (req, res) => {
-  console.log("addOrdersItems");
   const {
     orderItems,
     shippingAddress,
@@ -73,7 +72,7 @@ const updateOrderToPaid = asyncHandler(async (req, res) => {
     };
 
     const updatedOrder = await order.save();
-    
+
     res.json(updatedOrder);
   } else {
     res.status(404);
@@ -81,4 +80,14 @@ const updateOrderToPaid = asyncHandler(async (req, res) => {
   }
 });
 
-export { addItemsOrder, getOrderById, updateOrderToPaid };
+/*
+@desc       Get logged in users orders
+@route      GET /api/myorders
+@access     Private
+*/
+const getMyOrders = asyncHandler(async (req, res) => {
+  const orders = await Order.find({ user: req.user._id });
+  res.send(orders);
+});
+
+export { addItemsOrder, getOrderById, updateOrderToPaid, getMyOrders };

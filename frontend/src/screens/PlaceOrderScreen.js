@@ -42,7 +42,6 @@ const PlaceOrderScreen = ({ history }) => {
   }, [history, success]);
 
   const placeOrderHandler = () => {
-    console.log("placeOrder")
     dispatch(
       createOrder({
         // user: req.user._id,
