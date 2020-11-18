@@ -6,7 +6,7 @@ import { Table, Button } from "react-bootstrap";
 import Loader from "../components/Loader";
 import Message from "../components/Message";
 
-import { usersList } from "../actions/userActions";
+import { usersList, userDelete } from "../actions/userActions";
 
 const UsersListScreen = ({ history }) => {
   const dispatch = useDispatch();
@@ -17,6 +17,9 @@ const UsersListScreen = ({ history }) => {
   const userLogin = useSelector((state) => state.userLogin);
   const { userInfo } = userLogin;
 
+  const userDeleted = useSelector((state) => state.userDelete);
+  const { success: successDelete } = userDeleted;
+
   useEffect(() => {
     if (userInfo && userInfo.isAdmin) {
       dispatch(usersList());
@@ -26,10 +29,12 @@ const UsersListScreen = ({ history }) => {
       }
       history.push("/login");
     }
-  }, [dispatch, history, userInfo]);
+  }, [dispatch, history, userInfo, successDelete]);
 
   const deleteHandler = (id) => {
-    console.log("blarg");
+    if (window.confirm("Are you sure?")){
+      dispatch(userDelete(id));
+    };
   };
 
   return (
