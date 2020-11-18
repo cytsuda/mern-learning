@@ -6,7 +6,8 @@ import FormContainer from "../components/FormContainer";
 import Message from "../components/Message";
 import Loader from "../components/Loader";
 
-import { getUserDetails } from "../actions/userActions";
+import { getUserDetails, updateUser } from "../actions/userActions";
+import { USER_UPDATE_RESET } from "../constants/userConstants";
 
 const UserEditScreen = ({ match, history }) => {
   const userId = match.params.id;
@@ -19,18 +20,29 @@ const UserEditScreen = ({ match, history }) => {
   const userDetails = useSelector((state) => state.userDetails);
   const { loading, error, user } = userDetails;
 
+  const userUpdate = useSelector((state) => state.userUpdate);
+  const {
+    loading: loadingUpdate,
+    error: errorUpdate,
+    success: successUpdate,
+  } = userUpdate;
+
   useEffect(() => {
-    if (!user.name || user._id !== userId) {
+    if (successUpdate) {
+      dispatch({ type: USER_UPDATE_RESET });
+      history.push("/admin/userlist");
+    } else if (!user.name || user._id !== userId) {
       dispatch(getUserDetails(userId));
     } else {
       setName(user.name);
       setEmail(user.email);
       setIsAdmin(user.isAdmin);
     }
-  }, [dispatch, user, userId]);
+  }, [dispatch, user, userId, successUpdate,history]);
 
   const submitHandler = (e) => {
     e.preventDefault();
+    dispatch(updateUser({ _id: userId, userId, name, email, isAdmin }));
   };
   return (
     <>
@@ -47,7 +59,8 @@ const UserEditScreen = ({ match, history }) => {
           ID: <em className="text-uppercase">{userId}</em>
         </small>
         <hr className="mt-2 mb-4" />
-
+        {loadingUpdate && <Loader />}
+        {errorUpdate && <Message variant="danger">{error}</Message>}
         {loading ? (
           <Loader />
         ) : error ? (
