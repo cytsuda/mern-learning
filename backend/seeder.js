@@ -22,7 +22,6 @@ const importData = async () => {
     await User.deleteMany();
     const createUsers = await User.insertMany(users);
     const adminUser = createUsers[0]._id;
-    console.log(adminUser);
     const sampleProducts = products.map((product) => {
       return { ...product, user: adminUser };
     });
