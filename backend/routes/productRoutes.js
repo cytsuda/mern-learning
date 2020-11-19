@@ -6,9 +6,15 @@ import {
   getProducts,
   getProductById,
   deleteProduct,
+  createProduct,
+  updateProduct,
 } from "../controller/productController.js";
 
-router.route("/").get(getProducts);
-router.route("/:id").get(getProductById).delete(protect, admin, deleteProduct);
+router.route("/").get(getProducts).post(protect, admin, createProduct);
+router
+  .route("/:id")
+  .get(getProductById)
+  .put(protect, admin, updateProduct)
+  .delete(protect, admin, deleteProduct);
 
 export default router;
