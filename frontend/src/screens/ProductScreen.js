@@ -107,7 +107,10 @@ const ProductScreen = ({ history, match }) => {
               )}
               <ListGroup.Item>
                 <Button
-                  className={clsx("btn-block", product.countInStock === 0 ? "btn-secondary":"btn-primary")}
+                  className={clsx(
+                    "btn-block",
+                    product.countInStock === 0 ? "btn-secondary" : "btn-primary"
+                  )}
                   disabled={product.countInStock === 0}
                   onClick={submitHandler}
                 >

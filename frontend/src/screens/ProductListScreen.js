@@ -101,7 +101,7 @@ const ProductListScreen = ({ history }) => {
           responsive
           className="table-sm"
         >
-          <thead class="thead-dark">
+          <thead className="thead-dark">
             <tr>
               <th>ID</th>
               <th>NAME</th>
