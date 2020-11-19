@@ -23,7 +23,7 @@ const Product = ({ product }) => {
         </Card.Text>
         <Card.Text as="h3" className="text-right">
           <span className="h5 mr-1">$</span>
-          <span className="font-weight-bold">{product.price}</span>
+          <span className="font-weight-bold">{parseFloat(product.price).toFixed(2)}</span>
         </Card.Text>
       </Card.Body>
     </Card>
