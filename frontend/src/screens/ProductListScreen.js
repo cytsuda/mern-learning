@@ -6,13 +6,20 @@ import { Table, Button, Row, Col } from "react-bootstrap";
 import Loader from "../components/Loader";
 import Message from "../components/Message";
 
-import { listProducts } from "../actions/productActions";
+import { listProducts, deleteProduct } from "../actions/productActions";
 
 const ProductListScreen = ({ history }) => {
   const dispatch = useDispatch();
 
   const productList = useSelector((state) => state.productList);
   const { loading, error, products } = productList;
+
+  const productDelete = useSelector((state) => state.productDelete);
+  const {
+    loading: loadingDelete,
+    error: errorDelete,
+    success: successDelete,
+  } = productDelete;
 
   const userLogin = useSelector((state) => state.userLogin);
   const { userInfo } = userLogin;
@@ -23,10 +30,11 @@ const ProductListScreen = ({ history }) => {
     } else {
       history.push("/login");
     }
-  }, [dispatch, history, userInfo]);
+  }, [dispatch, history, userInfo, successDelete]);
 
   const deleteHandler = (id) => {
     if (window.confirm("Are you sure?")) {
+      dispatch(deleteProduct(id));
       // ADD DELETE DISPATCH
     }
   };
@@ -38,13 +46,19 @@ const ProductListScreen = ({ history }) => {
           <h1>Products</h1>
         </Col>
         <Col className="text-right">
-          <Button className="font-weight-bold text-uppercase" variant="outline-primary" size="lg" onClick={createProductHandler}>
-            <i className="fas fa-plus" /> &nbsp;
-            Create new product
+          <Button
+            className="font-weight-bold text-uppercase"
+            variant="outline-primary"
+            size="lg"
+            onClick={createProductHandler}
+          >
+            <i className="fas fa-plus" /> &nbsp; Create new product
           </Button>
         </Col>
       </Row>
       <hr />
+      {loadingDelete && <Loader />}
+      {errorDelete && <Message variant="danger">{errorDelete}</Message>}
       {loading ? (
         <Loader />
       ) : error ? (

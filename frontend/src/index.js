@@ -6,7 +6,6 @@ import "./index.css";
 import store from "./store";
 import App from "./App";
 import "./bootstrap.min.css";
-import reportWebVitals from "./reportWebVitals";
 
 ReactDOM.render(
   <Provider store={store}>
@@ -16,5 +15,3 @@ ReactDOM.render(
   </Provider>,
   document.getElementById("root")
 );
-
-reportWebVitals();
