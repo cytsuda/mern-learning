@@ -8,6 +8,7 @@ import {
   productDetailsReducer,
   productDeleteReducer,
   productCreateReducer,
+  productUpdateReducer,
 } from "./reducers/productReducers";
 
 import { cartReducer } from "./reducers/cartReducers";
@@ -43,6 +44,7 @@ const shippingAddressFromStorage = localStorage.getItem("shippingAddress")
 const reducer = combineReducers({
   productList: productListReducer,
   productDetails: productDetailsReducer,
+  productUpdate: productUpdateReducer,
   productCreate: productCreateReducer,
   productDelete: productDeleteReducer,
   cart: cartReducer,

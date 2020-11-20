@@ -6,7 +6,8 @@ import FormContainer from "../components/FormContainer";
 import Message from "../components/Message";
 import Loader from "../components/Loader";
 
-import { detailProduct } from "../actions/productActions";
+import { detailProduct, updateProduct } from "../actions/productActions";
+import { PRODUCT_UPDATE_RESET } from "../constants/productConstants";
 
 const ProductEditScreen = ({ match, history }) => {
   const dispatch = useDispatch();
@@ -19,18 +20,22 @@ const ProductEditScreen = ({ match, history }) => {
   const [category, setCategory] = useState("");
   const [countInStock, setCountInStock] = useState(0);
   const [description, setDescription] = useState("");
-  const [count, setCount] = useState(0);
 
   const productDetails = useSelector((state) => state.productDetails);
   const { product, error, loading } = productDetails;
 
-  useEffect(() => {
-    setCount((prev) => prev + 1);
+  const productUpdate = useSelector((state) => state.productUpdate);
+  const {
+    success: successUpdate,
+    error: errorUpdate,
+    loading: loadingUpdate,
+  } = productUpdate;
 
-    if (count === 20) {
+  useEffect(() => {
+    if (successUpdate) {
+      dispatch({ type: PRODUCT_UPDATE_RESET });
       history.push("/admin/productslist");
-    }
-    if (!product.name || product._id !== productId) {
+    } else if (!product.name || product._id !== productId) {
       dispatch(detailProduct(productId));
     } else {
       setName(product.name);
@@ -40,13 +45,24 @@ const ProductEditScreen = ({ match, history }) => {
       setCategory(product.category);
       setCountInStock(product.countInStock);
       setDescription(product.description);
-      setCount(product.count);
     }
-  }, [dispatch, history, productId, product]);
+  }, [dispatch, history, productId, product, successUpdate]);
 
   const submitHandler = (e) => {
     e.preventDefault();
-    // UPDATE PRODUCT
+    console.log(name);
+    dispatch(
+      updateProduct({
+        _id: productId,
+        name,
+        price,
+        image,
+        brand,
+        category,
+        countInStock,
+        description,
+      })
+    );
   };
   return (
     <>
@@ -63,6 +79,8 @@ const ProductEditScreen = ({ match, history }) => {
           PRODUCT ID: <em className="text-uppercase">{productId}</em>
         </small>
         <hr className="mt-2 mb-4" />
+        {loadingUpdate && <Loader />}
+        {errorUpdate && <Message variant="danger">{errorUpdate}</Message>}
         {loading ? (
           <Loader />
         ) : error ? (
