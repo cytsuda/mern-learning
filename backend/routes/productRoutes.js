@@ -8,9 +8,11 @@ import {
   deleteProduct,
   createProduct,
   updateProduct,
+  createNewReview,
 } from "../controller/productController.js";
 
 router.route("/").get(getProducts).post(protect, admin, createProduct);
+router.route("/:id/reviews").post(protect, createNewReview);
 router
   .route("/:id")
   .get(getProductById)
