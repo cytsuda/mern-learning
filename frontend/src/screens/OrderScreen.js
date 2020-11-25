@@ -8,6 +8,7 @@ import {
   Image,
   Card,
   Table,
+  Button,
 } from "react-bootstrap";
 import { PayPalButton } from "react-paypal-button-v2";
 import { useDispatch, useSelector } from "react-redux";
@@ -15,13 +16,21 @@ import { useDispatch, useSelector } from "react-redux";
 import Message from "../components/Message";
 import Loader from "../components/Loader";
 
-import { getOrderDetails, payOrder } from "../actions/orderActions";
-import { ORDER_PAY_RESET } from "../constants/orderConstants";
+import {
+  getOrderDetails,
+  payOrder,
+  deliverOrder,
+} from "../actions/orderActions";
+import {
+  ORDER_PAY_RESET,
+  ORDER_DELIVERED_RESET,
+} from "../constants/orderConstants";
 
-const OrderScreen = ({ match }) => {
+const OrderScreen = ({ match, history }) => {
   const orderId = match.params.id;
 
   const [sdkReady, setSdkready] = useState(false);
+  const [btnDeliver, setBtnDeliver] = useState(false);
 
   const dispatch = useDispatch();
 
@@ -30,6 +39,12 @@ const OrderScreen = ({ match }) => {
 
   const orderPay = useSelector((state) => state.orderPay);
   const { loading: loadingPay, success: successPay } = orderPay;
+
+  const orderDeliver = useSelector((state) => state.orderDeliver);
+  const { loading: loadingDeliver, success: successDeliver } = orderDeliver;
+
+  const userLogin = useSelector((state) => state.userLogin);
+  const { userInfo } = userLogin;
 
   // Calculate Prices
   const addDecimals = (num) => Math.round((num * 100) / 100).toFixed(2);
@@ -40,6 +55,9 @@ const OrderScreen = ({ match }) => {
   }
 
   useEffect(() => {
+    if (!userInfo) {
+      history.push("/login");
+    }
     const addPayPalScript = async () => {
       const { data: clientId } = await axios.get("/api/config/paypal");
       const script = document.createElement("script");
@@ -52,9 +70,11 @@ const OrderScreen = ({ match }) => {
       document.body.appendChild(script);
     };
 
-    if (successPay || !order) {
+    if (!order || order._id !== orderId || successPay || successDeliver) {
       dispatch({ type: ORDER_PAY_RESET });
+      dispatch({ type: ORDER_DELIVERED_RESET });
       dispatch(getOrderDetails(orderId));
+      setBtnDeliver(false);
     } else if (!order.isPaid) {
       if (!window.paypal) {
         addPayPalScript();
@@ -63,10 +83,14 @@ const OrderScreen = ({ match }) => {
       }
     }
     // eslint-disable-next-line
-  }, [dispatch, orderId, successPay, order]);
+  }, [dispatch, orderId, successPay, order, successDeliver, userInfo, history]);
 
   const successPaymentHandler = (paymentResult) => {
     dispatch(payOrder(orderId, paymentResult));
+  };
+  const deliveredHandler = () => {
+    setBtnDeliver(true);
+    dispatch(deliverOrder(order));
   };
   return (
     <>
@@ -105,14 +129,15 @@ const OrderScreen = ({ match }) => {
                   <p className="mb-3">
                     <strong>Name: </strong> {order.user.name}
                     <br />
-                    <strong>Email: </strong>{" "}
+                    <strong>Email: </strong> &nbsp;
                     <a href={`mailto:${order.user.email}`}>
                       {order.user.email}
                     </a>
                     <br />
-                    <strong>Address:</strong> {order.shippingAddress.address},{" "}
-                    {order.shippingAddress.city},{" "}
-                    {order.shippingAddress.postalCode},{" "}
+                    <strong>Address:</strong> {order.shippingAddress.address},
+                    &nbsp;
+                    {order.shippingAddress.city}, &nbsp;
+                    {order.shippingAddress.postalCode}, &nbsp;
                     {order.shippingAddress.country}
                   </p>
                   {order.isDelivered ? (
@@ -214,8 +239,8 @@ const OrderScreen = ({ match }) => {
                       </tr>
                     </tbody>
                   </Table>
-                  {
-                    <ListGroup variant="flush">
+                  <ListGroup variant="flush">
+                    {userInfo && !userInfo.isAdmin && (
                       <ListGroup.Item>
                         {loadingPay && <Loader />}
                         {!sdkReady ? (
@@ -228,8 +253,30 @@ const OrderScreen = ({ match }) => {
                           />
                         )}
                       </ListGroup.Item>
-                    </ListGroup>
-                  }
+                    )}
+                    {userInfo && userInfo.isAdmin && (
+                      <ListGroup.Item>
+                        {loadingDeliver ? (
+                          <Loader />
+                        ) : (
+                          <Button
+                            className="btn-block btn-large"
+                            variant="info"
+                            onClick={deliveredHandler}
+                            disabled={order.isDelivered}
+                          >
+                            {btnDeliver ? (
+                              <Loader variant="sm" />
+                            ) : order.isDelivered ? (
+                              "DELIVERED"
+                            ) : (
+                              "DELIVER"
+                            )}
+                          </Button>
+                        )}
+                      </ListGroup.Item>
+                    )}
+                  </ListGroup>
                   {error && <Message variant="danger">{error}</Message>}
                 </Card.Body>
               </Card>

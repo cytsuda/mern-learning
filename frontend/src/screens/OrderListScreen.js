@@ -61,8 +61,8 @@ const OrderListScreen = ({ history }) => {
               {orders.map((order) => (
                 <tr key={order._id}>
                   <td>{order._id}</td>
-                  <td>R${order.user.name}</td>
-                  <td className="text-right">{order.totalPrice}</td>
+                  <td>{order.user.name}</td>
+                  <td className="text-right">R${order.totalPrice}</td>
                   <td className="text-center">
                     {order.createdAt ? (
                       order.createdAt.substring(0, 10)
@@ -71,8 +71,15 @@ const OrderListScreen = ({ history }) => {
                     )}
                   </td>
                   <td className="text-center">
-                    {order.isDeliveredAt ? (
-                      order.isDeliveredAt.substring(0, 10)
+                    {order.isPaid ? (
+                      order.paidAt.substring(0, 10)
+                    ) : (
+                      <i className="fas fa-times text-danger" />
+                    )}
+                  </td>
+                  <td className="text-center">
+                    {order.isDelivered ? (
+                      order.deliveredAt.substring(0, 10)
                     ) : (
                       <i className="fas fa-times text-danger" />
                     )}

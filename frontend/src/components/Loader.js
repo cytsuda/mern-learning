@@ -1,14 +1,23 @@
 import React from "react";
 import { Spinner } from "react-bootstrap";
 
-const Loader = () => {
+const Loader = (props) => {
+  let variantStyle = {
+    width: "100px",
+    height: "100px",
+  };
+  if (props.variant === "sm") {
+    variantStyle = {
+      height: "35px",
+      width: "35px",
+    };
+  }
   return (
     <Spinner
       animation="border"
       role="status"
       style={{
-        width: "100px",
-        height: "100px",
+        ...variantStyle,
         margin: "auto",
         display: "block",
       }}
@@ -17,5 +26,7 @@ const Loader = () => {
     </Spinner>
   );
 };
-
+Loader.defaultProps = {
+  variant: false,
+};
 export default Loader;
