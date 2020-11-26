@@ -1,6 +1,6 @@
 import React from "react";
 
-const Rating = ({ value, text, color, sep }) => {
+const MyRating = ({ value, text, color }) => {
   let stars = [];
   for (let cont = 1; cont <= 5; cont++) {
     if (value - cont >= 0) {
@@ -21,14 +21,13 @@ const Rating = ({ value, text, color, sep }) => {
   return (
     <>
       <span>{stars}</span>
-      <span className={sep}>{text}</span>
+      <span>{text}</span>
     </>
   );
 };
 
-Rating.defaultProps = {
+MyRating.defaultProps = {
   color: "#efa31d",
-  sep: "ml-auto"
 };
 
-export default Rating;
+export default MyRating;
