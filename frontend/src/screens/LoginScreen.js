@@ -20,7 +20,11 @@ const LoginScreen = ({ location, history }) => {
 
   useEffect(() => {
     if (userInfo) {
-      history.push(redirect);
+      if (location.search) {
+        history.push(location.search.split("=")[1]);
+      } else {
+        history.goBack();
+      }
     }
   }, [history, userInfo, redirect]);
 
@@ -31,7 +35,8 @@ const LoginScreen = ({ location, history }) => {
 
   return (
     <FormContainer>
-      <h1>Sign Up</h1>
+      <h1 className="font-weight-bold text-uppercase my-4">Sign Up</h1>
+      <hr />
       {error && <Message variant="danger">{error}</Message>}
       {loading && <Loader />}
       <Form onSubmit={submitHandler}>
