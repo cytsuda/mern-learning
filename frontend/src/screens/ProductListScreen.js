@@ -5,6 +5,7 @@ import { Table, Button, Row, Col } from "react-bootstrap";
 
 import Loader from "../components/Loader";
 import Message from "../components/Message";
+import Paginate from "../components/Paginate";
 
 import {
   listProducts,
@@ -14,11 +15,13 @@ import {
 
 import { PRODUCT_CREATE_RESET } from "../constants/productConstants";
 
-const ProductListScreen = ({ history }) => {
+const ProductListScreen = ({ history, match }) => {
   const dispatch = useDispatch();
+  const pageNumber = match.params.pageNumber || 1;
+  console.log(pageNumber);
 
   const productList = useSelector((state) => state.productList);
-  const { loading, error, products } = productList;
+  const { loading, error, products, page, pages } = productList;
 
   const productDelete = useSelector((state) => state.productDelete);
   const {
@@ -46,7 +49,7 @@ const ProductListScreen = ({ history }) => {
     if (successCreate) {
       history.push(`/admin/products/${createdProduct._id}/edit`);
     } else {
-      dispatch(listProducts());
+      dispatch(listProducts("", pageNumber));
     }
   }, [
     dispatch,
@@ -55,6 +58,7 @@ const ProductListScreen = ({ history }) => {
     successDelete,
     successCreate,
     createdProduct,
+    pageNumber,
   ]);
 
   const deleteHandler = (id) => {
@@ -93,52 +97,55 @@ const ProductListScreen = ({ history }) => {
       ) : error ? (
         <Message variant="danger">{error}</Message>
       ) : (
-        <Table
-          variant="light"
-          striped
-          bordered
-          hover
-          responsive
-          className="table-sm"
-        >
-          <thead className="thead-dark">
-            <tr>
-              <th>ID</th>
-              <th>NAME</th>
-              <th className="text-center">PRICE</th>
-              <th>CATEGORY</th>
-              <th>BRAND</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            {products.map((product) => (
-              <tr key={product._id}>
-                <td>{product._id}</td>
-                <td>{product.name}</td>
-                <td className="text-right">
-                  ${parseFloat(product.price).toFixed(2)}
-                </td>
-                <td>{product.category}</td>
-                <td>{product.brand}</td>
-                <td className="text-center">
-                  <LinkContainer to={`/admin/products/${product._id}/edit`}>
-                    <Button variant="info" className="btn-sm mr-3">
-                      <i className="fas fa-edit" />
-                    </Button>
-                  </LinkContainer>
-                  <Button
-                    variant="danger"
-                    className="btn-sm"
-                    onClick={() => deleteHandler(product._id)}
-                  >
-                    <i className="fas fa-trash" />
-                  </Button>
-                </td>
+        <>
+          <Table
+            variant="light"
+            striped
+            bordered
+            hover
+            responsive
+            className="table-sm"
+          >
+            <thead className="thead-dark">
+              <tr>
+                <th>ID</th>
+                <th>NAME</th>
+                <th className="text-center">PRICE</th>
+                <th>CATEGORY</th>
+                <th>BRAND</th>
+                <th></th>
               </tr>
-            ))}
-          </tbody>
-        </Table>
+            </thead>
+            <tbody>
+              {products.map((product) => (
+                <tr key={product._id}>
+                  <td>{product._id}</td>
+                  <td>{product.name}</td>
+                  <td className="text-right">
+                    ${parseFloat(product.price).toFixed(2)}
+                  </td>
+                  <td>{product.category}</td>
+                  <td>{product.brand}</td>
+                  <td className="text-center">
+                    <LinkContainer to={`/admin/products/${product._id}/edit`}>
+                      <Button variant="info" className="btn-sm mr-3">
+                        <i className="fas fa-edit" />
+                      </Button>
+                    </LinkContainer>
+                    <Button
+                      variant="danger"
+                      className="btn-sm"
+                      onClick={() => deleteHandler(product._id)}
+                    >
+                      <i className="fas fa-trash" />
+                    </Button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+          <Paginate pages={pages} page={page} isAdmin={true} />
+        </>
       )}
     </>
   );
